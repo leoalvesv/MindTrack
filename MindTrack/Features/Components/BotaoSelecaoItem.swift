@@ -1,3 +1,11 @@
+//
+//  BotaoSelecaoItem.swift
+//  MindTrack
+//
+//  Created by Leonardo Alves Viana on 18/10/25.
+//
+
+
 import SwiftUI
 
 struct BotaoSelecaoItem: View {
@@ -13,9 +21,14 @@ struct BotaoSelecaoItem: View {
                     .font(.body)
                     .foregroundColor(.primary)
                 Spacer()
-                Image(systemName: estaSelecionado ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(estaSelecionado ? .purple : .gray)
-                    .symbolEffect(estaSelecionado ? .bounce : .none)
+                if estaSelecionado {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                        .symbolEffect(.bounce)
+                } else {
+                    Image(systemName: "circle")
+                        .foregroundColor(.gray)
+                }
             }
             .padding()
             .background(.ultraThinMaterial)
@@ -24,3 +37,4 @@ struct BotaoSelecaoItem: View {
         .buttonStyle(.plain)
     }
 }
+

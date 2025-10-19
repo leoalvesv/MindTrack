@@ -1,3 +1,11 @@
+//
+//  CartaoCriseView.swift
+//  MindTrack
+//
+//  Created by Leonardo Alves Viana on 18/10/25.
+//
+
+
 import SwiftUI
 
 struct CartaoCriseView: View {
@@ -13,7 +21,7 @@ struct CartaoCriseView: View {
                 Spacer()
                 Text("Intensidade: \(crise.intensidadeDor)/10")
                     .bold()
-                    .foregroundColor(.purple)
+                    .foregroundColor(.green)
             }
             
             if !crise.sintomasRegistrados.isEmpty {

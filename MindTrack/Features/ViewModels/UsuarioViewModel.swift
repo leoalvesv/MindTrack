@@ -1,3 +1,11 @@
+//
+//  UsuarioViewModel.swift
+//  MindTrack
+//
+//  Created by Leonardo Alves Viana on 18/10/25.
+//
+
+
 import Foundation
 import SwiftData
 
@@ -5,8 +13,11 @@ import SwiftData
 class UsuarioViewModel: ObservableObject {
     
     @Published var usuarioAtual: Usuario?
+    private var contextoDeDados: ModelContext
     
-    @Environment(\.modelContext) private var contextoDeDados
+    init(contexto: ModelContext) {
+        self.contextoDeDados = contexto
+    }
     
     func criarUsuario(nomeCompleto: String, email: String, dataNascimento: Date? = nil, genero: String? = nil) {
         let novoUsuario = Usuario(nomeCompleto: nomeCompleto,
@@ -34,3 +45,4 @@ class UsuarioViewModel: ObservableObject {
         }
     }
 }
+

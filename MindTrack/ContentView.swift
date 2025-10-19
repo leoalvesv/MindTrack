@@ -5,20 +5,24 @@
 //  Created by Leonardo Alves Viana on 18/10/25.
 //
 
+
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var mostrarTelaPrincipal = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        if mostrarTelaPrincipal {
+            TelaPrincipalView()
+        } else {
+            SplashView(mostrarTelaPrincipal: $mostrarTelaPrincipal)
         }
-        .padding()
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }

@@ -1,3 +1,11 @@
+//
+//  SplashView.swift
+//  MindTrack
+//
+//  Created by Leonardo Alves Viana on 18/10/25.
+//
+
+
 import SwiftUI
 
 struct SplashView: View {
@@ -8,15 +16,13 @@ struct SplashView: View {
     
     var body: some View {
         ZStack {
-            // Fundo gradiente verde
             LinearGradient(colors: [Color.green.opacity(0.7), Color.mint.opacity(0.7)],
                            startPoint: .topLeading,
                            endPoint: .bottomTrailing)
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
-                // Logo
-                Image(systemName: "brain.head.profile") // Troque pelo logo real
+                Image(systemName: "brain.head.profile")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 120, height: 120)
@@ -25,7 +31,6 @@ struct SplashView: View {
                     .scaleEffect(animacaoEscala)
                     .opacity(animacaoOpacidade)
                 
-                // Nome do app
                 Text("MindTrack")
                     .font(.system(size: 36, weight: .bold))
                     .foregroundColor(.white)
@@ -33,13 +38,11 @@ struct SplashView: View {
             }
         }
         .onAppear {
-            // Animação suave de entrada
             withAnimation(.easeOut(duration: 1.0)) {
                 animacaoEscala = 1.0
                 animacaoOpacidade = 1.0
             }
             
-            // Depois de 2 segundos, mostra a tela principal
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 mostrarTelaPrincipal = true
             }

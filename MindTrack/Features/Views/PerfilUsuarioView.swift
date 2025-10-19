@@ -1,8 +1,23 @@
+//
+//  PerfilUsuarioView.swift
+//  MindTrack
+//
+//  Created by Leonardo Alves Viana on 18/10/25.
+//
+
+
 import SwiftUI
+import SwiftData
 
 struct PerfilUsuarioView: View {
     
-    @StateObject private var viewModel = UsuarioViewModel()
+    @Environment(\.modelContext) private var contextoDeDados
+    @StateObject private var viewModel: UsuarioViewModel
+
+    init(contexto: ModelContext) {
+        _viewModel = StateObject(wrappedValue: UsuarioViewModel(contexto: contexto))
+    }
+
     @State private var nomeCompleto: String = ""
     @State private var email: String = ""
     @State private var dataNascimento: Date = .now
