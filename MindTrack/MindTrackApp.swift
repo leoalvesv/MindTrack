@@ -10,10 +10,20 @@ import SwiftData
 
 @main
 struct MindTrackApp: App {
+    
+    // Criar o container principal do SwiftData
+    let containerDeDados: ModelContainer = {
+        do {
+            return try ModelContainer(for: Crise.self)
+        } catch {
+            fatalError("Erro ao inicializar o SwiftData: \(error)")
+        }
+    }()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .modelContainer(for: [Crise.self, Usuario.self])
+                .modelContainer(containerDeDados)
         }
     }
 }

@@ -11,11 +11,11 @@ import SwiftData
 struct ConfiguracoesView: View {
     
     @AppStorage("notificacoesAtivas") private var notificacoesAtivas: Bool = true
-    
     @Environment(\.modelContext) private var contextoDeDados
-    @Query(sort: \Crise.dataRegistro, order: .forward) private var listaCrises: [Crise]
+    @Query(sort: \Crise.dataRegistro, order: .reverse) private var listaCrises: [Crise]
     
-    @State private var mostrarCompartilhar = false
+    // Exportação
+    @State private var mostrarResumoExportacao = false
     @State private var arquivoURL: URL?
     
     var body: some View {
@@ -32,7 +32,7 @@ struct ConfiguracoesView: View {
                         )
                         .padding(.top, 10)
                     
-                    // Notificações
+                    // MARK: - Notificações
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Notificações")
                             .font(.headline)
@@ -46,14 +46,15 @@ struct ConfiguracoesView: View {
                     .cornerRadius(16)
                     .shadow(radius: 2)
                     
-                    // Exportação de dados
+                    // MARK: - Exportar dados
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Exportar dados")
                             .font(.headline)
+                        
                         Button {
-                            exportarCSV()
+                            mostrarResumoExportacao = true
                         } label: {
-                            Label("Exportar CSV", systemImage: "square.and.arrow.up")
+                            Label("Visualizar e Exportar", systemImage: "square.and.arrow.up")
                                 .font(.headline)
                                 .padding()
                                 .frame(maxWidth: .infinity)
@@ -65,11 +66,9 @@ struct ConfiguracoesView: View {
                                 .shadow(radius: 4)
                         }
                         .buttonStyle(.plain)
-                        .sheet(isPresented: $mostrarCompartilhar, content: {
-                            if let arquivoURL {
-                                ActivityViewController(activityItems: [arquivoURL])
-                            }
-                        })
+                        .sheet(isPresented: $mostrarResumoExportacao) {
+                            ResumoExportacaoView(listaCrises: listaCrises)
+                        }
                     }
                     .padding()
                     .background(.ultraThinMaterial)
@@ -83,8 +82,81 @@ struct ConfiguracoesView: View {
             }
         }
     }
+}
+
+// MARK: - Tela de Resumo de Exportação
+
+struct ResumoExportacaoView: View {
     
-    // MARK: - Funções auxiliares
+    var listaCrises: [Crise]
+    @Environment(\.dismiss) private var fecharTela
+    @State private var mostrarAlertaCompartilhar = false
+    @State private var arquivoURL: URL?
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                Text("Resumo das Crises")
+                    .font(.largeTitle.bold())
+                    .padding(.top)
+                
+                ScrollView {
+                    VStack(spacing: 15) {
+                        ForEach(listaCrises) { crise in
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(crise.dataRegistro.formatted(date: .numeric, time: .shortened))
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                Text("Intensidade: \(crise.intensidadeDor)/10")
+                                    .bold()
+                                    .foregroundColor(.green)
+                                if !crise.sintomasRegistrados.isEmpty {
+                                    Text("Sintomas: \(crise.sintomasRegistrados.joined(separator: ", "))")
+                                        .font(.subheadline)
+                                }
+                                if !crise.gatilhosPossiveis.isEmpty {
+                                    Text("Gatilhos: \(crise.gatilhosPossiveis.joined(separator: ", "))")
+                                        .font(.subheadline)
+                                }
+                                if let anotacoes = crise.anotacoesAdicionais, !anotacoes.isEmpty {
+                                    Text("Anotações: \(anotacoes)")
+                                        .font(.subheadline)
+                                        .italic()
+                                }
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading) // <- força largura igual
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(16)
+                            .shadow(radius: 2)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                
+                // Botão Exportar CSV
+                Button {
+                    exportarCSV()
+                } label: {
+                    Label("Exportar resumo", systemImage: "square.and.arrow.up")
+                        .font(.headline)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(.linearGradient(colors: [.green, .mint],
+                                                    startPoint: .leading,
+                                                    endPoint: .trailing))
+                        .foregroundColor(.white)
+                        .cornerRadius(16)
+                        .shadow(radius: 4)
+                        .padding()
+                }
+            }
+            .navigationBarTitle("Resumo", displayMode: .inline)
+            .alert("Erro ao exportar CSV", isPresented: $mostrarAlertaCompartilhar) {
+                Button("OK", role: .cancel) {}
+            }
+        }
+    }
     
     private func exportarCSV() {
         var csvString = "Data,Intensidade,Sintomas,Gatilhos,Anotacoes\n"
@@ -101,9 +173,20 @@ struct ConfiguracoesView: View {
             let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("MindTrack_Historico.csv")
             try csvString.write(to: tempURL, atomically: true, encoding: .utf8)
             arquivoURL = tempURL
-            mostrarCompartilhar = true
+            mostrarAlertaCompartilhar = true
+            
+            // Compartilhar
+            if let arquivoURL {
+                let activityVC = UIActivityViewController(activityItems: [arquivoURL], applicationActivities: nil)
+                
+                // Obter a cena ativa
+                if let cena = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let rootController = cena.windows.first?.rootViewController {
+                    rootController.present(activityVC, animated: true)
+                }
+            }
         } catch {
-            print("Erro ao exportar CSV: \(error.localizedDescription)")
+            mostrarAlertaCompartilhar = true
         }
     }
 }

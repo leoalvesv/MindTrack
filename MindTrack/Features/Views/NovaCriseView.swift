@@ -18,6 +18,7 @@ struct NovaCriseView: View {
     @State private var sintomasSelecionados: [String] = []
     @State private var gatilhosSelecionados: [String] = []
     @State private var anotacoesAdicionais: String = ""
+    @State private var dataCrise: Date = .now
     
     // Alerta
     @State private var mostrarAlerta = false
@@ -57,7 +58,25 @@ struct NovaCriseView: View {
                         )
                         .padding(.top, 10)
                     
-                    // Intensidade da dor
+                    // MARK: - Data da crise
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Data da crise")
+                            .font(.headline)
+                        
+                        DatePicker(
+                            "Selecione a data",
+                            selection: $dataCrise,
+                            in: ...Date(), // somente datas passadas e hoje
+                            displayedComponents: .date
+                        )
+                        .datePickerStyle(.compact)
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(16)
+                    .shadow(radius: 2)
+                    
+                    // MARK: - Intensidade da dor
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Intensidade da dor")
                             .font(.headline)
@@ -74,7 +93,7 @@ struct NovaCriseView: View {
                     .cornerRadius(16)
                     .shadow(radius: 2)
                     
-                    // Sintomas
+                    // MARK: - Sintomas
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Sintomas sentidos")
                             .font(.headline)
@@ -93,7 +112,7 @@ struct NovaCriseView: View {
                     .cornerRadius(16)
                     .shadow(radius: 2)
                     
-                    // Gatilhos
+                    // MARK: - Gatilhos
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Possíveis gatilhos")
                             .font(.headline)
@@ -112,7 +131,7 @@ struct NovaCriseView: View {
                     .cornerRadius(16)
                     .shadow(radius: 2)
                     
-                    // Anotações adicionais
+                    // MARK: - Anotações adicionais
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Anotações adicionais")
                             .font(.headline)
@@ -128,7 +147,7 @@ struct NovaCriseView: View {
                     .cornerRadius(16)
                     .shadow(radius: 2)
                     
-                    // Botão de salvar
+                    // MARK: - Botão de salvar
                     Button {
                         salvarNovaCrise()
                     } label: {
@@ -154,7 +173,6 @@ struct NovaCriseView: View {
         }
         .alert(mensagemAlerta, isPresented: $mostrarAlerta) {
             Button("OK", role: .cancel) {
-                // Se sucesso, fecha a tela e reseta formulário
                 if mensagemAlerta.contains("sucesso") {
                     resetarFormulario()
                     fecharTela()
@@ -164,7 +182,6 @@ struct NovaCriseView: View {
     }
     
     // MARK: - Métodos auxiliares
-    
     private func alternarSelecaoItem(item: String, listaSelecionada: inout [String]) {
         if let indice = listaSelecionada.firstIndex(of: item) {
             listaSelecionada.remove(at: indice)
@@ -175,7 +192,7 @@ struct NovaCriseView: View {
     
     private func salvarNovaCrise() {
         let novaCrise = Crise(
-            dataRegistro: Date(),
+            dataRegistro: dataCrise,
             intensidadeDor: Int(intensidadeDor),
             sintomasRegistrados: sintomasSelecionados,
             gatilhosPossiveis: gatilhosSelecionados,
@@ -199,5 +216,6 @@ struct NovaCriseView: View {
         sintomasSelecionados = []
         gatilhosSelecionados = []
         anotacoesAdicionais = ""
+        dataCrise = .now
     }
 }

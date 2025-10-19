@@ -33,10 +33,6 @@ struct TelaPrincipalView: View {
                     Label("Estatísticas", systemImage: "chart.bar.fill")
                 }
             
-            // Aba Perfil do usuário
-            PerfilUsuarioView(contexto: contextoDeDados)
-                    .tabItem { Label("Perfil", systemImage: "person.crop.circle") }
-            
             // Aba Configurações
             ConfiguracoesView()
                 .tabItem {

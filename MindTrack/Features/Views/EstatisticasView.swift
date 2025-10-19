@@ -109,7 +109,7 @@ struct EstatisticasView: View {
                     
                     Spacer(minLength: 30)
                 }
-                .padding(.bottom, 40)
+                .padding()
             }
         }
         .onAppear {
