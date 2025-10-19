@@ -1,0 +1,36 @@
+import Foundation
+import SwiftData
+
+@MainActor
+class UsuarioViewModel: ObservableObject {
+    
+    @Published var usuarioAtual: Usuario?
+    
+    @Environment(\.modelContext) private var contextoDeDados
+    
+    func criarUsuario(nomeCompleto: String, email: String, dataNascimento: Date? = nil, genero: String? = nil) {
+        let novoUsuario = Usuario(nomeCompleto: nomeCompleto,
+                                  email: email,
+                                  dataNascimento: dataNascimento,
+                                  genero: genero)
+        contextoDeDados.insert(novoUsuario)
+        try? contextoDeDados.save()
+        usuarioAtual = novoUsuario
+    }
+    
+    func atualizarUsuario(nomeCompleto: String, email: String, dataNascimento: Date?, genero: String?) {
+        guard let usuario = usuarioAtual else { return }
+        usuario.nomeCompleto = nomeCompleto
+        usuario.email = email
+        usuario.dataNascimento = dataNascimento
+        usuario.genero = genero
+        try? contextoDeDados.save()
+    }
+    
+    func carregarUsuario() {
+        let requisicao: FetchDescriptor<Usuario> = FetchDescriptor(sortBy: [SortDescriptor(\.dataCriacao)])
+        if let primeiroUsuario = try? contextoDeDados.fetch(requisicao).first {
+            usuarioAtual = primeiroUsuario
+        }
+    }
+}
